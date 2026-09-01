@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiSAAS - Restaurante POS</title>
+  <link rel="manifest" href="manifest.json">
+  <script src="https://jsdelivr.net"></script>
+  <script src="https://jsdelivr.net"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+
+  <!-- BARRA DE NAVEGACIÓN DE ROLES -->
+  <nav class="bg-emerald-600 text-white shadow p-3 sticky top-0 z-50 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🍔</span>
+      <h1 class="font-bold text-lg tracking-tight">Restaurante POS</h1>
+    </div>
+    <div class="flex gap-2 bg-emerald-700 p-1 rounded-lg text-xs">
+      <button onclick="cambiarVista('pos')" id="btn-nav-pos" class="px-3 py-1.5 rounded-md font-medium bg-white text-emerald-800 shadow">Punto de Venta</button>
+      <button onclick="cambiarVista('admin')" id="btn-nav-admin" class="px-3 py-1.5 rounded-md font-medium text-emerald-100">Administrador</button>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO DINÁMICO -->
+  <main class="max-w-4xl mx-auto p-4">
+
+    <!-- SECCIÓN 1: VISTA PUNTO DE VENTA (POS) -->
+    <section id="vista-pos" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Menú de Productos -->
+      <div class="md:col-span-2 space-y-4">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-slate-700">Productos Disponibles</h2>
+            <div id="status-conexion" class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Modo Local Activo</div>
+          </div>
+          <div id="grid-productos-pos" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- Renderizado dinámico desde app.js -->
+          </div>
+        </div>
+
+        <!-- Acciones del Cajero (Caja y Gastos) -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+            <h3 class="text-xs font-bold text-slate-500 uppercase">Control de Caja</h3>
+            <button onclick="gestionarCaja('apertura')" class="w-full bg-slate-800 text-white text-xs p-2 rounded-lg font-medium hover:bg-slate-900">Apertura Turno</button>
+            <button onclick="gestionarCaja('cierre')" class="w-full bg-rose-600 text-white text-xs p-2 rounded-lg font-medium hover:bg-rose-700">Cierre Turno</button>
+          </div>
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+            <h3 class="text-xs font-bold text-slate-500 uppercase">Gastos en Turno</h3>
+            <input type="number" id="pos-gasto-monto" placeholder="Monto" class="w-full p-1.5 text-xs border border-slate-300 rounded">
+            <button onclick="registrarGastoPOS()" class="w-full bg-amber-600 text-white text-xs p-2 rounded-lg font-medium hover:bg-amber-700">Reportar Gasto</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carrito de Compras / Facturación -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 h-fit space-y-4">
+        <h2 class="font-bold text-slate-700 border-b pb-2">Orden Actual</h2>
+        <div id="items-carrito" class="space-y-2 max-h-48 overflow-y-auto text-xs">
+          <p class="text-slate-400 text-center py-4">No hay productos en la orden</p>
+        </div>
+        <div class="border-t pt-3 space-y-2">
+          <div class="flex justify-between font-bold text-slate-900">
+            <span>Total:</span>
+            <span id="pos-total-orden">$0</span>
+          </div>
+          <button onclick="procesarVenta()" class="w-full bg-emerald-600 text-white font-bold p-2.5 rounded-xl text-sm shadow hover:bg-emerald-700 transition">
+            Cobrar e Imprimir
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: VISTA ADMINISTRADOR -->
+    <section id="vista-admin" class="hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Gestión de Materia Prima -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
+          <h2 class="font-bold text-slate-800 text-sm flex items-center gap-1">📋 Inventario Materia Prima</h2>
+          <div class="space-y-2">
+            <input type="text" id="admin-mp-nombre" placeholder="Nombre (Ej: Carne de Res, Bebida Cola)" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="admin-mp-cantidad" placeholder="Cantidad / Peso" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+              <select id="admin-mp-unidad" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+                <option value="gramos">Gramos (g)</option>
+                <option value="unidades">Unidades (und)</option>
+              </select>
+            </div>
+            <input type="number" id="admin-mp-costo" placeholder="Costo Total Factura" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+            <button onclick="guardarMateriaPrima()" class="w-full bg-indigo-600 text-white text-xs font-semibold p-2 rounded-lg hover:bg-indigo-700">Ingresar Materia Prima</button>
+          </div>
+        </div>
+
+        <!-- Creación de Productos en Menú -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
+          <h2 class="font-bold text-slate-800 text-sm flex items-center gap-1">🍔 Configurar Menú de Venta</h2>
+          <div class="space-y-2">
+            <input type="text" id="admin-prod-nombre" placeholder="Nombre del Plato/Bebida" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+            <input type="number" id="admin-prod-precio" placeholder="Precio de Venta al Público" class="w-full p-2 text-xs border border-slate-300 rounded-lg">
+            <button onclick="guardarProductoMenu()" class="w-full bg-indigo-600 text-white text-xs font-semibold p-2 rounded-lg hover:bg-indigo-700">Agregar al Menú</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
