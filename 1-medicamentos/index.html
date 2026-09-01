@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Medicamentos</title>
+  <link rel="manifest" href="manifest.json">
+  <!-- CDN Estable de Tailwind CSS -->
+  <script src="https://tailwindcss.com"></script>
+  <!-- Supabase CDN JS -->
+  <script src="https://jsdelivr.net"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans p-4">
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+    
+    <!-- Encabezado -->
+    <header class="flex items-center gap-3 mb-6">
+      <div class="bg-indigo-100 p-2 rounded-xl text-indigo-600 font-bold text-2xl">💊</div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Mis Medicamentos</h1>
+        <p class="text-xs text-slate-500">Control estricto de dosis e inventario</p>
+      </div>
+    </header>
+
+    <!-- PANTALLA 1: REGISTRO DE INGRESO (ADMIN / NUEVO STOCK) -->
+    <section class="mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200">
+      <h2 class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1">➕ Añadir o Surtir Medicamento</h2>
+      <div class="space-y-3">
+        <input type="text" id="reg-nombre" placeholder="Nombre (Ej: Acetaminofén)" class="w-full p-2 text-sm bg-white rounded-lg border border-slate-300 focus:outline-indigo-500">
+        
+        <div class="grid grid-cols-2 gap-2">
+          <select id="reg-presentacion" class="p-2 text-sm bg-white rounded-lg border border-slate-300" onchange="actualizarUnidadesMedida()">
+            <option value="capsulas">Cápsulas</option>
+            <option value="pastas">Pastas</option>
+            <option value="jarabe">Jarabe</option>
+          </select>
+          <input type="text" id="reg-gramaje" placeholder="Gramaje/Vol (Ej: 500mg)" class="p-2 text-sm bg-white rounded-lg border border-slate-300">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="reg-stock" placeholder="Cantidad Inicial" class="p-2 text-sm bg-white rounded-lg border border-slate-300">
+          <span id="lbl-unidad" class="p-2 text-sm text-slate-500 flex items-center font-medium bg-slate-100 rounded-lg justify-center">unidades</span>
+        </div>
+
+        <button onclick="registrarMedicamento()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2 rounded-lg text-sm transition-colors shadow">
+          Guardar en Inventario
+        </button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: REGISTRO DE INGESTA -->
+    <section class="space-y-4">
+      <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1">🕒 Registrar Nueva Ingesta</h2>
+      
+      <!-- Selector Desplegable Dinámico -->
+      <div>
+        <label class="block text-xs text-slate-500 mb-1">Seleccionar Medicamento:</label>
+        <select id="select-medicamentos" class="w-full p-2 text-sm bg-white rounded-lg border border-slate-300 focus:outline-indigo-500" onchange="cargarDetallesMedicamento()"></select>
+      </div>
+
+      <!-- Alerta de seguridad (Tiempo no cumplido) -->
+      <div id="alerta-seguridad" class="hidden bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-medium space-y-1">
+        <p class="font-bold flex items-center gap-1">⚠️ ¡ALERTA DE SEGURIDAD!</p>
+        <p id="alerta-mensaje">Aún no se cumple el intervalo de tiempo configurado para esta toma.</p>
+      </div>
+
+      <!-- Campos de dosis -->
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Cantidad Toma:</label>
+          <div class="flex items-center bg-white rounded-lg border border-slate-300 overflow-hidden">
+            <input type="number" id="ingesta-cantidad" value="1" class="w-full p-2 text-sm focus:outline-none">
+            <span id="ingesta-lbl-medida" class="px-2 text-xs text-slate-400 font-semibold bg-slate-50 border-l border-slate-200">unidades</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">Intervalo (Horas):</label>
+          <input type="number" id="ingesta-intervalo" placeholder="Ej: 8" class="w-full p-2 text-sm bg-white rounded-lg border border-slate-300 focus:outline-indigo-500">
+        </div>
+      </div>
+
+      <!-- Cuadro de Cálculo y Stock Futuro -->
+      <div id="cuadro-calculo" class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-xs space-y-1 text-indigo-900 hidden">
+        <p><strong>Stock Actual:</strong> <span id="calc-stock-actual">0</span></p>
+        <p><strong>Dosis Alcanzables:</strong> <span id="calc-dosis-disponibles">0</span> dosis</p>
+      </div>
+
+      <button onclick="ejecutarIngesta()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-2.5 rounded-lg text-sm transition-colors shadow">
+        Efectuar Ingesta & Activar Alerta ICS
+      </button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
