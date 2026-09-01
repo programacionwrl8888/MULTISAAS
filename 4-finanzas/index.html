@@ -7,14 +7,12 @@
   <link rel="manifest" href="manifest.json">
   <script src="https://jsdelivr.net"></script>
   <script src="https://jsdelivr.net"></script>
-  <!-- Motor OCR gratuito para escanear facturas por imagen -->
   <script src="https://jsdelivr.net"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4">
 
   <main class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-100 space-y-6">
     
-    <!-- Encabezado -->
     <header class="flex justify-between items-center border-b pb-4">
       <div class="flex items-center gap-3">
         <div class="bg-cyan-100 p-2.5 rounded-xl text-cyan-600 font-bold text-2xl">💰</div>
@@ -25,31 +23,25 @@
       </div>
     </header>
 
-    <!-- MONITOREO DE SALDO DE CUENTAS -->
+    <!-- BALANCE -->
     <section class="bg-slate-900 text-white p-4 rounded-xl space-y-2 shadow-inner">
       <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Saldo Disponible Estimado</p>
       <h2 id="lbl-saldo-total" class="text-2xl font-black font-mono text-cyan-400">$0.00</h2>
       <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800 text-xs">
         <div>
           <span class="text-slate-400">Cuenta:</span>
-          <select id="select-cuenta-balance" class="bg-slate-800 text-white rounded p-1 w-full mt-1 border border-slate-700" onchange="actualizarSaldoPantalla()">
-            <!-- Dinámico -->
-          </select>
+          <select id="select-cuenta-balance" class="bg-slate-800 text-white rounded p-1 w-full mt-1 border border-slate-700" onchange="actualizarSaldoPantalla()"></select>
         </div>
         <div>
           <span class="text-slate-400">Establecimiento:</span>
-          <select id="select-establecimiento-compra" class="bg-slate-800 text-white rounded p-1 w-full mt-1 border border-slate-700">
-            <!-- Dinámico -->
-          </select>
+          <select id="select-establecimiento-compra" class="bg-slate-800 text-white rounded p-1 w-full mt-1 border border-slate-700"></select>
         </div>
       </div>
     </section>
 
-    <!-- ESCANEO DE FACTURAS POR FOTO (OCR) -->
+    <!-- ESCANEO OCR -->
     <section class="bg-cyan-50/50 border border-cyan-200 rounded-xl p-4 space-y-3">
       <h3 class="text-xs font-bold text-cyan-900 uppercase flex items-center gap-1">📸 Escanear Factura Física</h3>
-      <p class="text-[11px] text-slate-500">Toma una foto para procesar los artículos uno por uno automáticamente.</p>
-      
       <div class="flex items-center justify-center w-full">
         <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-cyan-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-cyan-50 transition">
           <div class="flex flex-col items-center justify-center pt-5 pb-6">
@@ -61,40 +53,33 @@
       <div id="status-ocr" class="text-[11px] text-center font-semibold text-slate-500 hidden">Procesando imagen... ⏳</div>
     </section>
 
-    <!-- FORMULARIO DE COMPRA MANUAL / INTEGRACIÓN AL CARRITO -->
+    <!-- FORMULARIO MANUAL -->
     <section class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
       <h3 class="text-xs font-bold text-slate-700 uppercase">Añadir Artículo Manual</h3>
       <div class="space-y-2 text-xs">
-        <input type="text" id="compra-articulo" placeholder="Nombre del Artículo (Ej: Arroz, Jabón)" class="w-full p-2 bg-white rounded-lg border border-slate-300">
+        <input type="text" id="compra-articulo" placeholder="Nombre del Artículo" class="w-full p-2 bg-white rounded-lg border border-slate-300">
         <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="compra-cantidad" value="1" placeholder="Cantidad" class="p-2 bg-white rounded-lg border border-slate-300">
-          <input type="number" id="compra-precio" placeholder="Precio Unitario" class="p-2 bg-white rounded-lg border border-slate-300">
+          <input type="number" id="compra-cantidad" value="1" placeholder="Cantidad" class="w-full p-2 bg-white rounded-lg border border-slate-300">
+          <input type="number" id="compra-precio" placeholder="Precio Unitario" class="w-full p-2 bg-white rounded-lg border border-slate-300">
         </div>
-        <button onclick="agregarAlCarritoFinanzas()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold p-2 rounded-lg transition shadow-sm">
-          Agregar al Carrito
-        </button>
+        <button onclick="agregarAlCarritoFinanzas()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold p-2 rounded-lg transition shadow-sm">Agregar al Carrito</button>
       </div>
     </section>
 
-    <!-- CARRITO MULTIPLE Y SUMATORIA ANTES DE GUARDAR -->
+    <!-- CARRITO MULTIPLE -->
     <section class="space-y-3">
       <h3 class="text-xs font-bold text-slate-700 uppercase">Lista de Compra / Carrito</h3>
       <div id="lista-carrito-finanzas" class="text-xs space-y-1.5 max-h-40 overflow-y-auto">
         <p class="text-slate-400 text-center py-2">El carrito está vacío</p>
       </div>
-      
       <div class="border-t pt-3 flex justify-between items-center font-bold text-sm text-slate-900">
         <span>Total Carrito:</span>
         <span id="lbl-total-carrito">$0.00</span>
       </div>
-
-      <button onclick="guardarCompraMaestro()" class="w-full bg-slate-900 hover:bg-black text-white font-bold p-3 rounded-xl text-xs transition shadow-sm">
-        Efectuar Compra y Descontar Dinero
-      </button>
+      <button onclick="guardarCompraMaestro()" class="w-full bg-slate-900 hover:bg-black text-white font-bold p-3 rounded-xl text-xs transition shadow-sm">Efectuar Compra y Descontar Dinero</button>
     </section>
 
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,5 +1,4 @@
-// Configuración de Supabase (Sustituye por tus llaves reales del Paso 1)
-const SUPABASE_URL = "https://igzwopivsuoytovokmmn.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "Tsb_publishable_AN-fZr6XIAeB0DoYJeCbLQ_dIIHDMV_";
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -10,12 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     inicializarCanvasFirma();
 });
 
-// 1. MOTOR DE BÚSQUEDA EN TABLA act_inventario
 async function buscarActivo() {
     const busqueda = document.getElementById("txt-busqueda").value.trim();
     if (!busqueda) return alert("Ingresa un término de búsqueda.");
 
-    // Consulta flexible por placa, nombre o ID
     const { data, error } = await supabase
         .from('act_inventario')
         .select('*')
@@ -23,7 +20,7 @@ async function buscarActivo() {
         .limit(1);
 
     if (error || !data || data.length === 0) {
-        alert("Elemento no encontrado en el inventario.");
+        alert("Elemento no encontrado.");
         document.getElementById("card-activo").classList.add("hidden");
         return;
     }
@@ -34,7 +31,7 @@ async function buscarActivo() {
 
 function desplegarInformacionActivo() {
     document.getElementById("card-activo").classList.remove("hidden");
-    document.getElementById("panel-traslado").classList.add("hidden"); // Resetear formulario de firmas
+    document.getElementById("panel-traslado").classList.add("hidden");
 
     document.getElementById("act-nombre").innerText = activoActual.nombre;
     document.getElementById("act-placa").innerText = activoActual.placa;
@@ -43,8 +40,7 @@ function desplegarInformacionActivo() {
     const badge = document.getElementById("badge-estado");
     const alerta = document.getElementById("alerta-activo");
 
-    // Manejo de estados configurados en tu sistema
-    if (activoActual.estado === 'mantenimiento' || activoActual.estado === 'prestamo') {
+    if (['mantenimiento', 'prestamo'].includes(activoActual.estado)) {
         badge.innerText = activoActual.estado;
         badge.className = "text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800";
         alerta.classList.remove("hidden");
@@ -59,35 +55,41 @@ function desplegarInformacionActivo() {
     }
 }
 
-// 2. CONFIGURACIÓN DEL CANVAS PARA CAPTURA DE FIRMA TÁCTIL O RATÓN
 function inicializarCanvasFirma() {
     canvas = document.getElementById("canvas-firma");
     if (!canvas) return;
     ctx = canvas.getContext("2d");
-    ctx.strokeStyle = "#1E293B"; // Color pizarra oscuro para el trazo
+    ctx.strokeStyle = "#1E293B";
     ctx.lineWidth = 2;
 
-    // Eventos Mouse
     canvas.addEventListener("mousedown", (e) => { dibujando = true; ctx.beginPath(); moverTrazo(e); });
     canvas.addEventListener("mousemove", (e) => { if(dibujando) moverTrazo(e); });
     window.addEventListener("mouseup", () => dibujando = false);
 
-    // Eventos Táctiles (Móviles / Tablets)
     canvas.addEventListener("touchstart", (e) => { dibujando = true; ctx.beginPath(); moverTrazoTacto(e); e.preventDefault(); });
     canvas.addEventListener("touchmove", (e) => { if(dibujando) moverTrazoTacto(e); e.preventDefault(); });
     window.addEventListener("touchend", () => dibujando = false);
 }
 
-function moverTrazo(e) {
+function obtenerPosicion(e, isTouch = false) {
     const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+function moverTrazo(e) {
+    const pos = obtenerPosicion(e);
+    ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
 }
 
 function moverTrazoTacto(e) {
-    const rect = canvas.getBoundingClientRect();
-    const toque = e.touches[0];
-    ctx.lineTo(toque.clientX - rect.left, toque.clientY - rect.top);
+    const pos = obtenerPosicion(e, true);
+    ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
 }
 
@@ -95,7 +97,6 @@ function limpiarFirma() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// 3. FLUJO DE TRASLADO CON SUPERVISIÓN
 function abrirModalTraslado() {
     document.getElementById("panel-traslado").classList.remove("hidden");
     limpiarFirma();
@@ -105,12 +106,10 @@ async function guardarTrasladoProceso() {
     const receptor = document.getElementById("traslado-receptor").value.trim();
     const ubicacion = document.getElementById("traslado-ubicacion").value.trim();
     
-    if (!receptor || !ubicacion) return alert("Por favor asigna el receptor y la nueva ubicación.");
+    if (!receptor || !ubicacion) return alert("Completa los datos solicitados.");
 
-    // Convertir el trazo del canvas a formato Base64 para guardarlo de forma segura
     const stringFirmaB64 = canvas.toDataURL();
 
-    // 1. Insertar registro histórico en act_historial_traslados
     const { error: errorHistorial } = await supabase
         .from('act_historial_traslados')
         .insert([{
@@ -119,33 +118,29 @@ async function guardarTrasladoProceso() {
             custodio_anterior: activoActual.custodio_actual,
             custodio_nuevo: receptor,
             nueva_posicion: ubicacion,
-            firma_recibido_b64: stringFirmaB64, // Registro e integridad biométrica manual
-            aprobacion_jefe: false, // Requiere inicio de sesión del jefe de área para el visto bueno definitivo
+            firma_recibido_b64: stringFirmaB64,
+            aprobacion_jefe: false,
             fecha_traslado: new Date().toISOString()
         }]);
 
-    if (errorHistorial) return alert("Error registrando la transferencia: " + errorHistorial.message);
+    if (errorHistorial) return alert("Error en transferencia: " + errorHistorial.message);
 
-    // 2. Actualizar la tabla principal de activos con la nueva posición provisional
     const { error: errorActivo } = await supabase
         .from('act_inventario')
-        .update({
-            custodio_actual: receptor,
-            ubicacion: ubicacion
-        })
+        .update({ custodio_actual: receptor, ubicacion: ubicacion })
         .eq('id', activoActual.id);
 
     if (errorActivo) {
-        alert("Error actualizando activo: " + errorActivo.message);
+        alert("Error: " + errorActivo.message);
     } else {
-        alert("¡Proceso de traslado enviado con éxito! Queda en espera de la validación del jefe de área.");
+        alert("¡Traslado registrado! En espera de aprobación del jefe.");
         document.getElementById("panel-traslado").classList.add("hidden");
-        buscarActivo(); // Refrescar los datos en pantalla
+        buscarActivo();
     }
 }
 
 async function marcarNovedadSede() {
-    const novedad = prompt("Escribe la novedad (mantenimiento, prestamo, baja):").toLowerCase();
+    const novedad = prompt("Escribe el estado (mantenimiento, prestamo, baja):").toLowerCase();
     if (!['mantenimiento', 'prestamo', 'baja'].includes(novedad)) return alert("Estado no válido.");
 
     const { error } = await supabase
@@ -155,7 +150,7 @@ async function marcarNovedadSede() {
 
     if (error) alert("Error: " + error.message);
     else {
-        alert("Estado del activo modificado correctamente.");
+        alert("Estado modificado.");
         buscarActivo();
     }
 }

@@ -12,7 +12,6 @@
 
   <main class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-100 space-y-6">
     
-    <!-- Encabezado -->
     <header class="flex items-center gap-3 border-b pb-4">
       <div class="bg-amber-100 p-2.5 rounded-xl text-amber-600 font-bold text-2xl">📦</div>
       <div>
@@ -21,7 +20,7 @@
       </div>
     </header>
 
-    <!-- MOTOR DE BÚSQUEDA GLOBAL -->
+    <!-- BÚSQUEDA GLOBAL -->
     <section class="space-y-2">
       <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Buscar Elemento</label>
       <div class="flex gap-2">
@@ -30,7 +29,7 @@
       </div>
     </section>
 
-    <!-- RESULTADO DE BÚSQUEDA / VISTA DE ESTADO -->
+    <!-- RESULTADO DE BÚSQUEDA -->
     <section id="card-activo" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 relative">
       <div class="flex justify-between items-start">
         <div>
@@ -44,22 +43,19 @@
         </div>
       </div>
 
-      <!-- Alertas Importantes o Pendientes -->
       <div id="alerta-activo" class="hidden bg-rose-50 border border-rose-200 text-rose-800 p-2.5 rounded-lg text-xs font-medium">
-        ⚠️ <strong>Nota importante:</strong> Elemento marcado para mantenimiento / préstamo fuera de sede.
+        ⚠️ <strong>Nota importante:</strong> Elemento fuera de sede.
       </div>
 
-      <!-- Botones de Novedades -->
       <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
         <button onclick="abrirModalTraslado()" class="bg-slate-800 text-white text-[11px] p-2 rounded-lg font-medium hover:bg-slate-900 transition text-center">Transferir Custodia</button>
         <button onclick="marcarNovedadSede()" class="bg-slate-200 text-slate-700 text-[11px] p-2 rounded-lg font-medium hover:bg-slate-300 transition text-center">Marcar Salida / Baja</button>
       </div>
     </section>
 
-    <!-- PANEL DE TRASLADO SEGURO (FORMULARIO CON FIRMA NATIVA) -->
+    <!-- FORMULARIO CON FIRMA NATIVA -->
     <section id="panel-traslado" class="hidden bg-amber-50/50 border border-amber-200 rounded-2xl p-4 space-y-4">
       <h3 class="font-bold text-slate-800 text-xs uppercase flex items-center gap-1">✍️ Formalizar Traslado de Activo</h3>
-      
       <div class="space-y-2 text-xs">
         <div>
           <label class="block text-slate-500 mb-1">Cédula o ID de quien Recibe:</label>
@@ -69,8 +65,6 @@
           <label class="block text-slate-500 mb-1">Nueva Ubicación / Oficina:</label>
           <input type="text" id="traslado-ubicacion" placeholder="Ej: Oficina 302 Sede Norte" class="w-full p-2 bg-white rounded-lg border border-slate-300">
         </div>
-        
-        <!-- Canvas para Firma Táctil / Biométrica Manual -->
         <div>
           <label class="block text-slate-500 mb-1">Firma de Conformidad (Dibujar aquí):</label>
           <div class="border border-slate-300 bg-white rounded-lg overflow-hidden shadow-inner">
@@ -79,14 +73,12 @@
           <button onclick="limpiarFirma()" class="text-[10px] text-rose-600 underline font-semibold mt-1 block text-right">Borrar trazo</button>
         </div>
       </div>
-
       <button onclick="guardarTrasladoProceso()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-2.5 rounded-xl text-xs transition shadow-sm">
         Registrar Traslado con Visto Bueno del Jefe
       </button>
     </section>
 
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>
