@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ÁMATE - Plataforma de Salud</title>
+  <link rel="manifest" href="manifest.json">
+  <script src="https://jsdelivr.net"></script>
+  <script src="https://jsdelivr.net"></script>
+  <!-- Generador nativo de PDFs para historias clínicas -->
+  <script src="https://cloudflare.com"></script>
+</head>
+<body class="bg-rose-50/30 text-slate-800 font-sans min-h-screen p-4">
+
+  <main class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 border border-rose-100 space-y-6">
+    
+    <header class="flex items-center gap-3 border-b border-rose-100 pb-4">
+      <div class="bg-rose-100 p-2.5 rounded-xl text-rose-600 font-bold text-2xl">🏥</div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight">ÁMATE Salud</h1>
+        <p class="text-xs text-slate-500">Telemedicina y expedientes médicos</p>
+      </div>
+    </header>
+
+    <!-- REPEPERTORIO DE PROFESIONALES DISPONIBLES -->
+    <section class="space-y-3">
+      <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Selecciona tu Profesional</label>
+      <select id="select-medicos" class="w-full p-2.5 text-xs bg-slate-50 rounded-xl border border-slate-200 focus:outline-rose-500" onchange="cargarEspecialidad()">
+        <!-- Dinámico -->
+      </select>
+      <div id="info-perfil" class="text-xs bg-rose-50/50 p-2.5 rounded-lg border border-rose-100 hidden">
+        <p class="font-bold text-rose-900" id="lbl-medico-nombre">---</p>
+        <p class="text-slate-500" id="lbl-medico-tarifa">Tarifa: ---</p>
+      </div>
+    </section>
+
+    <!-- AGENDAMIENTO DE CITAS Y REPORTE DE PAGO (NEQUI/DAVIPLATA) -->
+    <section class="bg-slate-50 border p-4 rounded-xl space-y-3">
+      <h3 class="text-xs font-bold text-slate-700 uppercase">📅 Agendar Cita Virtual o Presencial</h3>
+      <div class="space-y-2 text-xs">
+        <input type="datetime-local" id="cita-fecha" class="w-full p-2 bg-white rounded-lg border border-slate-300">
+        <select id="cita-plataforma" class="w-full p-2 bg-white rounded-lg border border-slate-300">
+          <option value="WhatsApp">Videollamada de WhatsApp</option>
+          <option value="Google Meet">Google Meet</option>
+          <option value="Presencial">Consulta Presencial Sede</option>
+        </select>
+        
+        <!-- Carga de Comprobante de Pago -->
+        <div class="border border-dashed border-slate-300 bg-white p-2.5 rounded-lg text-center">
+          <label class="block text-[11px] text-slate-500 cursor-pointer font-medium">
+            📸 Adjuntar Comprobante Pago (Nequi/Daviplata)
+            <input type="file" id="cita-comprobante" accept="image/*" class="hidden">
+          </label>
+        </div>
+        
+        <button onclick="solicitarCitaMedica()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-lg text-xs transition shadow-sm">
+          Reservar Cita y Enviar Validación
+        </button>
+      </div>
+    </section>
+
+    <!-- CUSTODIA DE HISTORIAS CLÍNICAS (Exportación PDF) -->
+    <section class="space-y-3 pt-2 border-t">
+      <h3 class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1">📋 Gestión de Historia Clínica</h3>
+      <div class="space-y-2 text-xs">
+        <input type="text" id="hc-paciente-id" placeholder="Cédula del Paciente" class="w-full p-2 bg-white rounded-lg border border-slate-300">
+        <textarea id="hc-diagnostico" rows="3" placeholder="Escribe la evolución médica, notas de salud y prescripción..." class="w-full p-2 bg-white rounded-lg border border-slate-300"></textarea>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="guardarHistoriaClinica()" class="bg-slate-900 text-white font-semibold p-2 rounded-lg hover:bg-black transition">Guardar Historial</button>
+          <button onclick="exportarHistoriaPDF()" class="bg-emerald-600 text-white font-semibold p-2 rounded-lg hover:bg-emerald-700 transition">Exportar PDF 📄</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

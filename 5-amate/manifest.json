@@ -1,0 +1,13 @@
+{
+  "short_name": "AmateSalud",
+  "name": "MultiSAAS - ÁMATE Plataforma de Salud",
+  "icons": [
+    {"src": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏥</text></svg>", "sizes": "192x192", "type": "image/svg+xml"},
+    {"src": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏥</text></svg>", "sizes": "512x512", "type": "image/svg+xml"}
+  ],
+  "start_url": "./index.html",
+  "background_color": "#E11D48",
+  "theme-color": "#E11D48",
+  "display": "standalone",
+  "orientation": "portrait"
+}
